@@ -542,8 +542,8 @@ section[id],
   border-color: var(--color-border-strong);
 }
 
-/* 不可用状态：虚线边框 + 明确文本，不依赖颜色传递信息 */
-.btn[aria-disabled="true"] {
+/* 不可用状态：原生 disabled + 虚线边框 + 明确文本，不依赖颜色传递信息 */
+.btn:disabled {
   color: var(--color-fg-subtle);
   background-color: transparent;
   border-color: var(--color-border);

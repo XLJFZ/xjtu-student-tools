@@ -67,7 +67,9 @@ assets/images/        站点图标与 Open Graph 图片
 
 ## 部署
 
-使用 GitHub Pages 的**分支部署**方式（Deploy from a branch）：`main` 分支根目录，无需 Actions workflow。
+使用 GitHub Pages 的**分支部署**方式（Deploy from a branch）：`main` 分支根目录，无需自定义 GitHub Actions workflow —— 部署由 GitHub Pages 内置的构建流程完成。
+
+根目录的 `.nojekyll` 是一个空文件，用于显式关闭 Jekyll 处理，确保静态文件按原样提供服务。
 
 ## Security
 
