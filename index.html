@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>XJTU Student Tools · 西安交通大学学生工具集</title>
+<meta name="description" content="面向西安交通大学学生的非官方开源工具集合，提供课程表同步、思源学堂资源工具等实用功能。让课表、课程资源和校园数字服务更容易使用。">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="XJTU Student Tools">
+<meta property="og:title" content="XJTU Student Tools · 西安交通大学学生工具集">
+<meta property="og:description" content="面向西安交通大学学生的非官方开源工具集合，提供课程表同步、思源学堂资源工具等实用功能。">
+<meta property="og:url" content="https://xljfz.github.io/xjtu-student-tools/">
+<meta property="og:image" content="https://xljfz.github.io/xjtu-student-tools/assets/images/og.png">
+<meta property="og:image:alt" content="XJTU Student Tools —— 西安交通大学学生工具集">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="2" y="2" width="20" height="20" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.5"></rect>
+        <g fill="currentColor">
+          <rect x="6.4" y="7" width="11.2" height="1.8" rx="0.9"></rect>
+          <rect x="6.4" y="11.1" width="4.9" height="1.8" rx="0.9"></rect>
+          <rect x="12.7" y="11.1" width="4.9" height="1.8" rx="0.9"></rect>
+          <rect x="6.4" y="15.2" width="4.9" height="1.8" rx="0.9"></rect>
+        </g>
+      </svg>
+      <span class="brand-text">XJTU Student Tools</span>
+    </a>
+    <nav class="site-nav" aria-label="主导航">
+      <a href="#tools">工具</a>
+      <a href="#about">关于</a>
+      <a href="#security">安全与隐私</a>
+      <a href="#disclaimer">免责声明</a>
+      <a class="nav-cta" href="https://github.com/XLJFZ/xjtu-student-tools" target="_blank" rel="noopener noreferrer">GitHub<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（在本站 GitHub 仓库新标签页打开）</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ Hero ============ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <p class="eyebrow">非官方开源项目</p>
+      <h1 id="hero-title">XJTU Student Tools</h1>
+      <p class="hero-sub">西安交通大学学生工具集</p>
+      <p class="hero-desc">面向西安交通大学学生的非官方开源工具集合。</p>
+      <p class="hero-desc hero-desc--dim">让课表、课程资源和校园数字服务更容易使用。</p>
+      <p class="hero-note">
+        本站不提供登录入口，也不会要求你输入账号、密码或验证码。
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ Tools ============ -->
+  <section id="tools" class="section" aria-labelledby="tools-title">
+    <div class="wrap">
+      <header class="section-head">
+        <h2 id="tools-title">工具</h2>
+        <p class="section-desc">以下项目各自独立维护、独立发布，版本号和更新节奏互不影响。</p>
+      </header>
+
+      <ul class="tool-grid">
+
+        <!-- 卡片 A：课程表同步 -->
+        <li>
+          <article class="card" aria-labelledby="tool-timetable">
+            <div class="card-head">
+              <h3 class="card-title" id="tool-timetable">课程表同步</h3>
+              <span class="badge badge--wip">开发中</span>
+            </div>
+
+            <p class="card-desc">
+              将 eHall 课程表转换为 ICS 日历，方便同步到手机、电脑和系统日历。
+            </p>
+
+            <ul class="tag-list">
+              <li class="tag">eHall</li>
+              <li class="tag">ICS</li>
+              <li class="tag">Calendar</li>
+              <li class="tag">跨平台</li>
+            </ul>
+
+            <details class="card-details">
+              <summary class="card-details-summary">项目介绍</summary>
+              <div class="card-details-body">
+                <p>
+                  学校课表通常只能在教务系统中查看，不方便和日常日历、提醒事项放在一起管理。
+                  这个工具的目标是把个人课表导出为标准 iCalendar（<code>.ics</code>）文件，
+                  再导入 Apple Calendar、Google Calendar、Outlook 等日历应用。
+                </p>
+                <p>
+                  计划中的处理包括：解析课程名称、教师、地点、星期、节次与周次，
+                  正确处理单双周和非连续周，尽量减少重复事件与错误时间，
+                  并在课表发生变化后支持增量更新。
+                </p>
+                <p class="card-details-note">
+                  项目处于早期开发阶段，仓库目前只有项目说明，尚无可用版本或 release。
+                </p>
+              </div>
+            </details>
+
+            <div class="card-actions">
+              <a class="btn btn--primary" href="https://github.com/XLJFZ/xjtu-timetable-calendar" target="_blank" rel="noopener noreferrer">GitHub 仓库<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（xjtu-timetable-calendar，在新标签页打开）</span></a>
+              <span class="btn btn--ghost" aria-disabled="true">尚无可用版本</span>
+            </div>
+          </article>
+        </li>
+
+        <!-- 卡片 B：思源学堂工具 -->
+        <li>
+          <article class="card" aria-labelledby="tool-siyuan">
+            <div class="card-head">
+              <h3 class="card-title" id="tool-siyuan">思源学堂工具</h3>
+              <span class="badge badge--stable">可用</span>
+            </div>
+
+            <p class="card-desc">
+              下载思源学堂课程资源与课程回放，并提供更可靠的资源管理和下载流程。
+            </p>
+
+            <ul class="tag-list">
+              <li class="tag">课程资源</li>
+              <li class="tag">课程回放</li>
+              <li class="tag">下载</li>
+              <li class="tag">开源</li>
+            </ul>
+
+            <details class="card-details">
+              <summary class="card-details-summary">项目介绍</summary>
+              <div class="card-details-body">
+                <p>
+                  思源学堂的部分课程附件由网页前端动态加载，直接保存网页并不容易完整保存课件、
+                  作业与录像。这个工具把当前账号有权访问的课程资源统一整理到本地，
+                  并按课件、作业、录像等类型归类。
+                </p>
+                <p>
+                  它只访问当前登录账号本身就有权访问的课程与资源，不绕过统一身份认证，
+                  也不改变服务器对课程资源的权限判断。使用方式与安全说明请以该仓库文档为准。
+                </p>
+              </div>
+            </details>
+
+            <div class="card-actions">
+              <a class="btn btn--primary" href="https://xljfz.github.io/xjtu-siyuanxuetang-grab/" target="_blank" rel="noopener noreferrer">使用说明<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（思源学堂工具文档站，在新标签页打开）</span></a>
+              <a class="btn btn--ghost" href="https://github.com/XLJFZ/xjtu-siyuanxuetang-grab" target="_blank" rel="noopener noreferrer">GitHub<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（xjtu-siyuanxuetang-grab，在新标签页打开）</span></a>
+            </div>
+          </article>
+        </li>
+
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ About ============ -->
+  <section id="about" class="section" aria-labelledby="about-title">
+    <div class="wrap">
+      <header class="section-head">
+        <h2 id="about-title">关于</h2>
+        <p class="section-desc">XJTU Student Tools 是若干独立学生工具的统一入口。</p>
+      </header>
+
+      <ul class="fact-list">
+        <li><strong>独立维护</strong>每个工具单独开发，互不依赖。</li>
+        <li><strong>独立发布</strong>各自拥有仓库与 release，可以单独升级或停止维护。</li>
+        <li><strong>独立版本管理</strong>版本号互不影响，不使用统一的 monorepo 版本。</li>
+        <li><strong>认证信息不经手门户</strong>本站不接收、不存储、不处理账号密码、Cookie、Token 或统一身份认证凭据。</li>
+      </ul>
+
+      <p class="section-foot">
+        本站只是一层导航与文档入口——它不复制子项目的源码，也不代替子项目的说明文档。
+        使用具体工具时，请以对应仓库的文档和安全须知为准。
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ Security & Privacy ============ -->
+  <section id="security" class="section" aria-labelledby="security-title">
+    <div class="wrap">
+      <header class="section-head">
+        <h2 id="security-title">安全与隐私</h2>
+      </header>
+
+      <ul class="fact-list fact-list--warn">
+        <li>本站本身不要求输入西安交通大学账号或密码。</li>
+        <li>不要向任何公开 Issue、日志、截图或讨论中提交 Cookie、Token、Session 等认证信息。</li>
+        <li>使用各子项目时，请先阅读对应项目的安全说明与使用范围。</li>
+        <li>所有工具都应尽量在用户本地处理认证信息与数据，凭证不应上传到第三方服务。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ Disclaimer ============ -->
+  <section id="disclaimer" class="section" aria-labelledby="disclaimer-title">
+    <div class="wrap">
+      <header class="section-head">
+        <h2 id="disclaimer-title">免责声明</h2>
+      </header>
+
+      <div class="notice">
+        <p>
+          本项目为学生个人维护的非官方开源项目，与西安交通大学官方无隶属、授权或合作关系。
+        </p>
+        <p>
+          “西安交通大学”“思源学堂”等名称仅用于说明对应的服务与兼容对象，不代表任何官方背书。
+        </p>
+        <p>
+          如果发现安全问题，请不要公开披露敏感信息，优先通过仓库提供的私密联系方式报告。
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p class="footer-brand">
+      <strong>XJTU Student Tools</strong>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <span>西安交通大学学生工具集</span>
+    </p>
+    <nav class="footer-nav" aria-label="页脚导航">
+      <a href="https://github.com/XLJFZ/xjtu-student-tools" target="_blank" rel="noopener noreferrer">GitHub<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（本站仓库，在新标签页打开）</span></a>
+      <a href="https://github.com/XLJFZ/xjtu-student-tools/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">License (MIT)<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（MIT 许可证文本，在新标签页打开）</span></a>
+    </nav>
+    <p class="footer-note">Non-official project · 非官方项目，与西安交通大学无隶属关系</p>
+  </div>
+</footer>
+
+</body>
+</html>

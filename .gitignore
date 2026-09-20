@@ -1,0 +1,17 @@
+# 操作系统 / 编辑器产生，与项目无关
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.log
+*.tmp
+
+# 本地助手工作目录（不应进入公开仓库）
+.workbuddy/
