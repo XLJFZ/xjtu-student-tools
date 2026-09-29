@@ -82,11 +82,11 @@
           <article class="card" aria-labelledby="tool-timetable">
             <div class="card-head">
               <h3 class="card-title" id="tool-timetable">课程表同步</h3>
-              <span class="badge badge--wip">开发中</span>
+              <span class="badge badge--stable">可用</span>
             </div>
 
             <p class="card-desc">
-              将 eHall 课程表转换为 ICS 日历，方便同步到手机、电脑和系统日历。
+              将 eHall「我的课表」导出为标准 iCalendar（<code>.ics</code>）文件，可导入手机、电脑与系统日历。
             </p>
 
             <ul class="tag-list">
@@ -101,23 +101,26 @@
               <div class="card-details-body">
                 <p>
                   学校课表通常只能在教务系统中查看，不方便和日常日历、提醒事项放在一起管理。
-                  这个工具的目标是把个人课表导出为标准 iCalendar（<code>.ics</code>）文件，
+                  这个工具把个人课表导出为标准 iCalendar（<code>.ics</code>）文件，
                   再导入 Apple Calendar、Google Calendar、Outlook 等日历应用。
                 </p>
                 <p>
-                  计划中的处理包括：解析课程名称、教师、地点、星期、节次与周次，
-                  正确处理单双周和非连续周，尽量减少重复事件与错误时间，
-                  并在课表发生变化后支持增量更新。
+                  与直接套用循环规则的做法不同，它会显式解析课程名称、教师、地点、星期、节次与周次，
+                  把教学周换算成具体日期，并按当天的冬 / 夏季作息换算节次对应的钟点 ——
+                  因此学期中途切换作息也不会算错时间。每一次实际上课生成一个独立事件，
+                  事件标识稳定，课表变化后重新导入即可更新，不会产生重复。
                 </p>
                 <p class="card-details-note">
-                  项目处于早期开发阶段，仓库目前只有项目说明，尚无可用版本或 release。
+                  使用前需要自行配置官方校历与作息表，并具备 Python 3.11+ 环境；
+                  登录由你在浏览器中亲自完成，工具不读取、不记录、不上传任何凭据。
+                  当前版本 v0.1.1（2026-09-28）。
                 </p>
               </div>
             </details>
 
             <div class="card-actions">
-              <a class="btn btn--primary" href="https://github.com/XLJFZ/xjtu-timetable-calendar" target="_blank" rel="noopener noreferrer">GitHub 仓库<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（xjtu-timetable-calendar，在新标签页打开）</span></a>
-              <button class="btn btn--ghost" type="button" disabled>尚无可用版本</button>
+              <a class="btn btn--primary" href="https://xljfz.github.io/xjtu-timetable-calendar/" target="_blank" rel="noopener noreferrer">使用说明<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（课程表同步工具文档站，在新标签页打开）</span></a>
+              <a class="btn btn--ghost" href="https://github.com/XLJFZ/xjtu-timetable-calendar" target="_blank" rel="noopener noreferrer">GitHub<span class="ext-mark" aria-hidden="true">↗</span><span class="sr-only">（xjtu-timetable-calendar，在新标签页打开）</span></a>
             </div>
           </article>
         </li>

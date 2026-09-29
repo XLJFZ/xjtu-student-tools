@@ -19,17 +19,20 @@
 
 | 工具 | 说明 | 状态 | 仓库 |
 | --- | --- | --- | --- |
-| 课程表同步 | 将 eHall 课程表转换为 ICS 日历，方便同步到手机、电脑和系统日历 | 开发中（尚无可用版本） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
+| 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，可导入手机、电脑与系统日历 | 可用（v0.1.1） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
 | 思源学堂工具 | 下载思源学堂课程资源与课程回放，并提供更可靠的资源管理和下载流程 | 可用 | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
 
 ### 课程表同步
 
-状态：**开发中**
+状态：**可用**（v0.1.1，2026-09-28）
 
-将西安交通大学 eHall 个人课表导出为标准 iCalendar（`.ics`）文件，便于导入手机、电脑或其他日历应用。
+将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，便于导入手机、电脑与其他日历应用。
 
 - 仓库：<https://github.com/XLJFZ/xjtu-timetable-calendar>
-- 该仓库目前仅包含项目说明，尚无可用版本或 release
+- 使用说明：<https://xljfz.github.io/xjtu-timetable-calendar/>
+- 逐次实际上课生成独立事件，事件标识稳定，课表变化后重新导入即可更新而不产生重复
+- 需要 Python 3.11+，并**自行配置官方校历与作息表**（工具刻意不内置猜测值）
+- 登录在你的浏览器中亲自完成，凭据不经手门户与本项目
 
 ### 思源学堂工具
 
