@@ -1,12 +1,14 @@
-"""刷新门户里被标记包住的子项目版本号与发布日期。
+"""刷新门户里被标记包住的子项目版本号与发布日期，并报告需要人工复核的漂移。
 
-只动两类区间：
+只做两件事：
 
-    <!-- @v:calendar -->v0.9.0<!-- @/v -->      版本号
-    <!-- @d:calendar -->2026-10-16<!-- @/d -->  发布日期
+1. 把 ``<!-- @v:key -->`` / ``<!-- @d:key -->`` 区间内的版本号与发布日期按上游现值改写。
+   区间外的任何文字一律不碰 —— 通路描述与功能口径是人的事，脚本不代劳。
+2. 对每次改写做分级，**minor 及以上**（以及两处数字互相矛盾、或上游版本往回退）
+   打一行机器可读的 ``DRIFT``，由 workflow 拿去开 issue 提醒人复核文案。
+   数字仍然刷过去了，issue 只是说「光刷数字不够，句子也要看」。
 
-区间外的任何文字一律不碰 —— 通路描述与功能口径是人的事，脚本不代劳。
-取值来源（都只在云端可达，本地跑要显式代理）：
+取值来源（都在云端直连可达，本地跑要显式代理）：
 
 - ``calendar``：PyPI ``info.version`` 与 ``urls[0].upload_time``
 - ``siyuan``：GitHub ``releases/latest`` 的 ``tag_name`` 与 ``published_at``
@@ -14,6 +16,13 @@
 
 判据是 fail-closed：任一来源取不到、版本形如非法、或某个标记的关键字不认识，
 两份文件都原样留在磁盘上（不会只改一半）、退出码 1。
+
+输出约定：
+
+- 人读的行照常打印；
+- ``DRIFT\\tkey\\t旧值\\t新值\\t分级\\t名称`` 供 workflow 解析，分级 ∈
+  ``patch`` / ``minor`` / ``major`` / ``inconsistent`` / ``regress``；
+  ``patch`` 也打出来，由 workflow 侧决定不开 issue —— 判据留在脚本，处置留在流水线。
 """
 
 from __future__ import annotations
@@ -26,19 +35,22 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 UTC = timezone.utc
+BEIJING = timezone(timedelta(hours=8))
 
 ROOT = Path(__file__).resolve().parent.parent
 FILES = ("index.html", "README.md")
 TIMEOUT = 30
 
-#: 关键字 -> (接口, 取版本的指针, 取日期的指针)
+#: 关键字 -> 取数指针与给人看的名称
 SOURCES = {
     "calendar": {
+        "name": "课程表同步",
         "url": "https://pypi.org/pypi/xjtu-timetable-calendar/json",
         "version": ("info", "version"),
         "date": ("urls", "0", "upload_time"),
     },
     "siyuan": {
+        "name": "思源学堂工具",
         "url": "https://api.github.com/repos/XLJFZ/xjtu-siyuanxuetang-grab/releases/latest",
         "version": ("tag_name",),
         "date": ("published_at",),
@@ -53,21 +65,52 @@ D_RE = re.compile(r"(<!--\s*@d:(\w+)\s*-->)([^<]*)(<!--\s*@/d\s*-->)")
 VERSION_OK = re.compile(r"^v?\d+\.\d+(\.\d+)?$")
 DATE_OK = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
+#: 需要人复核文案的分级（``patch`` 只升补丁号，默认不动句子）
+NEEDS_REVIEW = ("minor", "major", "inconsistent", "regress")
+
 
 class SyncError(RuntimeError):
     """任一取数或替换前提不成立 —— 于是不写盘。"""
 
 
-#: PyPI 与 GitHub 给的时间都是 UTC，而本项目的发布日一律写北京日期。
-#: 实测两次都跨了天：0.9.0 上传于 2026-10-15T18:48Z = 北京 10-16 02:48，
-#: 0.9.1 上传于 2026-10-22T17:19Z = 北京 10-23 01:19。
-#: 不换算的话脚本每天把 CHANGELOG 里那个正确的日期"改"回前一天，跟人对着干。
-#: 中国不用夏令时，固定 +08:00 就够，也免得依赖 tzdata。
-BEIJING = timezone(timedelta(hours=8))
+def _parts(version: str) -> tuple[int, int, int]:
+    """``v0.10.2`` -> ``(0, 10, 2)``；缺补丁位按 0。按数值比，不按字符串比。"""
+    numbers = [int(x) for x in version.lstrip("v").split(".")]
+    numbers += [0] * (3 - len(numbers))
+    return numbers[0], numbers[1], numbers[2]
+
+
+def classify(old: set[str], new: str) -> str:
+    """把「文件里现在写的」与「上游现值」的关系分成五级。
+
+    ``inconsistent`` 优先于一切：同一个 key 在 ``index.html`` 与 ``README.md``
+    里写了不同数字时，比对新值没有意义 —— 2026-10-23 那天门户三处版本号分两次才改齐，
+    就是这个形状。
+    """
+    if len(old) > 1:
+        return "inconsistent"
+    current = old.pop()
+    if current == new:
+        return "none"
+    before, after = _parts(current), _parts(new)
+    if after < before:
+        return "regress"
+    if before[0] != after[0]:
+        return "major"
+    if before[1] != after[1]:
+        return "minor"
+    return "patch"
 
 
 def _to_beijing_date(raw: str, key: str) -> str:
-    """把 ``2026-10-22T17:19:09`` 或带 Z 的同形串换成北京日期。"""
+    """把 ``2026-10-22T17:19:09`` 或带 Z 的同形串换成北京日期。
+
+    PyPI 与 GitHub 给的时间都是 UTC，而本项目的发布日一律写北京日期。
+    实测两次都跨了天：0.9.0 上传于 2026-10-15T18:48Z = 北京 10-16 02:48，
+    0.9.1 上传于 2026-10-22T17:19Z = 北京 10-23 01:19。
+    不换算的话脚本每天把正确的日期"改"回前一天，跟人对着干。
+    中国不用夏令时，固定 +08:00 就够，也免得依赖 tzdata。
+    """
     text = raw.rstrip("Z")
     if len(text) < 19:
         raise SyncError(f"{key}: 时间戳 {raw!r} 太短，取不出日期")
@@ -127,8 +170,10 @@ def _sub(
     values: dict[str, str],
     field: str,
     path: Path,
-) -> tuple[str, int]:
+) -> tuple[str, int, dict[str, set[str]]]:
+    """替换并回收每个 key 在文件里原本的取值集合（``v`` 才用于漂移分级）。"""
     hits = 0
+    seen: dict[str, set[str]] = {}
 
     def replace(match: re.Match[str]) -> str:
         nonlocal hits
@@ -140,9 +185,10 @@ def _sub(
         if not old.strip():
             raise SyncError(f"{path.name}: @{field}:{key} 的区间是空的，拒绝填")
         hits += 1
+        seen.setdefault(key, set()).add(old.strip())
         return f"{match.group(1)}{new}{match.group(4)}"
 
-    return regex.sub(replace, text), hits
+    return regex.sub(replace, text), hits, seen
 
 
 def sync(dry_run: bool) -> int:
@@ -153,16 +199,19 @@ def sync(dry_run: bool) -> int:
         values_v[key], values_d[key] = version, date
         print(f"{key}: {version} / {date}")
 
+    old_values: dict[str, set[str]] = {}
     pending: list[tuple[Path, str]] = []
     counts: dict[str, int] = {}
     for name in FILES:
         path = ROOT / name
         original = path.read_text(encoding="utf-8")
-        text, v_hits = _sub(V_RE, original, values_v, "v", path)
-        text, d_hits = _sub(D_RE, text, values_d, "d", path)
+        text, v_hits, seen_v = _sub(V_RE, original, values_v, "v", path)
+        text, d_hits, _ = _sub(D_RE, text, values_d, "d", path)
         if v_hits + d_hits == 0:
             raise SyncError(f"{name}: 一个标记都没有，脚本与文件的约定已失效")
         counts[name] = v_hits + d_hits
+        for key, olds in seen_v.items():
+            old_values.setdefault(key, set()).update(olds)
         if text != original:
             pending.append((path, text))
 
@@ -177,6 +226,17 @@ def sync(dry_run: bool) -> int:
         print(("待改写：" if dry_run else "已改写：") + "、".join(changed))
     else:
         print("无变化")
+
+    # 分级只在确认要写（或 --check 认为要写）之后才报，避免把失败现场当成漂移
+    for key, olds in sorted(old_values.items()):
+        kind = classify(set(olds), values_v[key])
+        if kind == "none":
+            continue
+        name = SOURCES[key]["name"]
+        print(f"DRIFT\t{key}\t{'|'.join(sorted(olds))}\t{values_v[key]}\t{kind}\t{name}")
+        flag = "需要人工复核文案" if kind in NEEDS_REVIEW else "只升补丁号，句子默认不动"
+        print(f"  {name}：{'、'.join(sorted(olds))} -> {values_v[key]}（{kind}，{flag}）")
+
     return 0
 
 

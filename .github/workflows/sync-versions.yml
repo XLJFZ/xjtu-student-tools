@@ -4,6 +4,11 @@ name: 同步子项目版本号
 # 包住的版本号与发布日期，按 PyPI 与 GitHub Releases 的现值刷新。
 # 区间外的文案（通路描述、默认值、安全说明）一概不动 —— 那些要人判断。
 #
+# 但「数字刷过去了」不等于「口径跟上了」：0.9.x -> 0.10.x 这种 minor 及以上跳法
+# 通常意味着多了通路或改了默认值。所以脚本会分级，minor / major /
+# 两处数字互相矛盾 / 上游往回退 这四类，由下面最后一步开一条 issue 提醒人来改句子
+# （patch 不开）。同一个工具只留一条开放 issue，后续的跳法追加评论，不重复开。
+#
 # 三条已知边界（都是 GitHub 官方文档口径）：
 # - schedule 只在默认分支上跑；
 # - 公共仓库 60 天无任何活动后，定时任务会被自动停用，有活动后自动恢复；
@@ -16,7 +21,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # 供下面这一步把改动推回本仓库
+  contents: write # 把版本号变化提交回本仓库
+  issues: write # minor 及以上漂移时开 issue / 追加评论
 
 jobs:
   sync:
@@ -29,10 +35,14 @@ jobs:
           python-version: "3.12"
 
       - name: 按 PyPI / Releases 现值刷新标记区间
-        run: python scripts/sync_versions.py
+        run: |
+          set -euo pipefail
+          # pipefail：脚本拒绝改动时（取数失败等）整步要红，不能被 tee 的 0 掩盖
+          python scripts/sync_versions.py | tee "$RUNNER_TEMP/sync.log"
 
       - name: 只有真的变了才提交
         run: |
+          set -euo pipefail
           if git diff --quiet -- index.html README.md; then
             echo "无变化，不产生提交"
             exit 0
@@ -42,3 +52,55 @@ jobs:
           git add index.html README.md
           git commit -m "chore(versions): 自动同步子项目版本号 [skip ci]"
           git push
+
+      - name: minor 及以上漂移开 issue 提醒复核文案
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          grep -E '^DRIFT' "$RUNNER_TEMP/sync.log" > "$RUNNER_TEMP/drift.tsv" || true
+          if [ ! -s "$RUNNER_TEMP/drift.tsv" ]; then
+            echo "没有版本漂移，不开 issue"
+            exit 0
+          fi
+          run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          while IFS=$'\t' read -r tag key old new kind name; do
+            case "$kind" in
+            minor | major | inconsistent | regress) ;;
+            *)
+              echo "跳过 $name（$kind）：补丁号不动句子"
+              continue
+              ;;
+            esac
+            if [ "$kind" = "inconsistent" ]; then
+              title="文案复核：$name 门户两处版本号本来不一致（$old，上游是 $new）"
+            else
+              title="文案复核：$name $old → $new（$kind）"
+            fi
+            # 不用 heredoc：块标量里结束符无法保证顶格；也不用反引号，双引号里会被当命令替换
+            {
+              echo "数字已由本次定时任务从 $old 刷成 $new，但通路描述与默认值不会自己跟上。"
+              echo
+              echo "分级：$kind"
+              echo
+              echo "要复核的两处（同一个 key 在两个文件里各写了一份，别只改一处）："
+              echo
+              echo "- index.html 的工具卡片：描述、标签、项目介绍三段、使用须知"
+              echo "- README.md：工具表那一行 + 对应小节的状态行与要点"
+              echo
+              echo "改句子的依据回上游取，不在门户上凭印象概括：版本号对 PyPI 的 info.version"
+              echo "（课程表）或 releases/latest 的 tag_name（思源，它不发 PyPI），"
+              echo "默认值与限定语对上游 README 与 docs/user-guide 的对应小节。"
+              echo "细则见 xjtu-timetable-calendar 仓库 docs/user-guide/contributing.md 的「发布」。"
+              echo
+              echo "本次运行日志：$run_url"
+            } >"$RUNNER_TEMP/issue.md"
+            existing=$(gh issue list --state open --search "$name 文案复核 in:title" --json number --jq '.[0].number // empty')
+            if [ -n "$existing" ]; then
+              echo "已有开放 issue #$existing（$name），追加评论"
+              gh issue comment "$existing" --body-file "$RUNNER_TEMP/issue.md"
+            else
+              echo "为 $name 开新 issue"
+              gh issue create --title "$title" --body-file "$RUNNER_TEMP/issue.md"
+            fi
+          done <"$RUNNER_TEMP/drift.tsv"

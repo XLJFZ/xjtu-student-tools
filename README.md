@@ -94,7 +94,11 @@ scripts/sync_versions.py      版本号同步脚本（标准库，无依赖）
   两份文件都不写、退出码 1；只有真的有变化时才产生提交
 - 日期一律换算成北京日期再比：PyPI 与 GitHub 返回的是 UTC，而本项目文档写的发布日期是北京时间，
   实测 0.9.0 与 0.9.1 两次上传都落在 UTC 16 点后，不换算就会每天把正确的日期「改」回前一天
-- **通路描述、默认值、安全说明这些要人判断的内容不在自动化范围内**，子项目功能变化时仍需人工回写
+- **通路描述、默认值、安全说明这些要人判断的内容不在自动化范围内**，由脚本分级、workflow 开 issue 提醒人来改：
+  - 每次改写都按 `旧值 → 新值` 分级：`patch`（补丁号）自己刷完就算；`minor`、`major` 会开一条 issue，因为这种跳法通常意味着多了通路或改了默认值，光刷数字不够
+  - 另外两种是"数据本身有问题"的形状，同样开 issue：`inconsistent`（同一个 key 在 `index.html` 与 `README.md` 里写了不同数字，2026-10-23 那天门户三处版本号分两次才改齐就是这个形状）、`regress`（门户写的比上游还高）
+  - 一个工具只留一条开放 issue：已有没关的就追加评论，不重复开
+  - issue 正文里写明要复核哪两处、以及依据回上游哪里取；数字照刷，句子等人
 
 手动跑一次（本地需显式指定代理）：
 
@@ -111,7 +115,7 @@ HTTPS_PROXY=http://127.0.0.1:7897 python scripts/sync_versions.py           # �
 
 根目录的 `.nojekyll` 是一个空文件，用于显式关闭 Jekyll 处理，确保静态文件按原样提供服务。
 
-仓库里唯一的 workflow 是 `.github/workflows/sync-versions.yml`（见上一节），它只提交版本号变化，不参与部署。Pages 在 `main` 有新提交后自行重建，实测延迟约 2 分钟。
+仓库里唯一的 workflow 是 `.github/workflows/sync-versions.yml`（见上一节），它只写版本号与开复核 issue，不参与部署；权限用到 `contents: write` 与 `issues: write`，都走内置的 `GITHUB_TOKEN`，**仓库里不存任何 token**。Pages 在 `main` 有新提交后自行重建，实测延迟约 2 分钟。
 
 ## Security
 

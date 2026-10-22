@@ -15,3 +15,6 @@ desktop.ini
 
 # 本地助手工作目录（不应进入公开仓库）
 .workbuddy/
+
+# Python 字节码（scripts/ 下的同步脚本跑出来的）
+__pycache__/
