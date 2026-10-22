@@ -19,12 +19,12 @@
 
 | 工具 | 说明 | 状态 | 仓库 |
 | --- | --- | --- | --- |
-| 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（v0.9.1） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
-| 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（v1.6.0） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
+| 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（<!-- @v:calendar -->v0.9.1<!-- @/v -->） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
+| 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（<!-- @v:siyuan -->v1.6.0<!-- @/v -->） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
 
 ### 课程表同步
 
-状态：**可用**（v0.9.1，2026-10-23）
+状态：**可用**（<!-- @v:calendar -->v0.9.1<!-- @/v -->，<!-- @d:calendar -->2026-10-23<!-- @/d -->）
 
 将 eHall「我的课表」解析为标准 iCalendar（`.ics`）：既能导出文件导入手机、电脑与其他日历应用，也能发布成一个订阅 URL，让日历客户端定期回源取最新。
 
@@ -39,7 +39,7 @@
 
 ### 思源学堂工具
 
-状态：**可用**（v1.6.0，2026-10-08）
+状态：**可用**（<!-- @v:siyuan -->v1.6.0<!-- @/v -->，<!-- @d:siyuan -->2026-10-08<!-- @/d -->）
 
 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，按类型与章节归类整理到本地。
 
@@ -64,9 +64,11 @@
 纯静态站点，无框架、无构建步骤、无第三方依赖：
 
 ```text
-index.html            门户首页
-assets/css/style.css  样式（CSS 变量 + prefers-color-scheme）
-assets/images/        站点图标与 Open Graph 图片
+index.html                    门户首页
+assets/css/style.css          样式（CSS 变量 + prefers-color-scheme）
+assets/images/                站点图标与 Open Graph 图片
+scripts/sync_versions.py      版本号同步脚本（标准库，无依赖）
+.github/workflows/            定时跑上面那个脚本，见下节
 ```
 
 - 零 JavaScript：所有导航与折叠内容均使用原生 HTML 实现，禁用 JavaScript 后功能完整
@@ -76,11 +78,40 @@ assets/images/        站点图标与 Open Graph 图片
 
 本地预览：直接双击打开 `index.html` 即可，无需任何环境准备。
 
+## 版本号同步
+
+子项目的**版本号与发布日期**由一个定时 workflow 刷新，不再靠人记得回来改：
+`scripts/sync_versions.py` 从 PyPI（课程表工具）与 GitHub Releases（思源学堂工具）取现值，
+只改写被注释标记包住的区间，区间外的文案一个字都不动。
+
+```html
+当前版本 <!-- @v:calendar -->v0.9.1<!-- @/v -->（<!-- @d:calendar -->2026-10-23<!-- @/d -->）。
+```
+
+- 开始标记带关键字（`@v:` 收版本号、`@d:` 收发布日期），闭合标记是 `@/v`、`@/d`；版本号写成 `v0.9.1` 这种形状，日期写成 `2026-10-23`；同一文件里可以出现多次
+- 开始与闭合必须在**同一行**：脚本只认行内区间，所以正文里提到这套写法时若不成对出现，不会被误当成待替换内容
+- 判据 fail-closed：任一来源取不到、版本形状非法、标记关键字不认识、或区间被清空，
+  两份文件都不写、退出码 1；只有真的有变化时才产生提交
+- 日期一律换算成北京日期再比：PyPI 与 GitHub 返回的是 UTC，而本项目文档写的发布日期是北京时间，
+  实测 0.9.0 与 0.9.1 两次上传都落在 UTC 16 点后，不换算就会每天把正确的日期「改」回前一天
+- **通路描述、默认值、安全说明这些要人判断的内容不在自动化范围内**，子项目功能变化时仍需人工回写
+
+手动跑一次（本地需显式指定代理）：
+
+```bash
+HTTPS_PROXY=http://127.0.0.1:7897 python scripts/sync_versions.py --check   # 只报告，不写盘
+HTTPS_PROXY=http://127.0.0.1:7897 python scripts/sync_versions.py           # 真的改写
+```
+
+定时任务的三条边界：`schedule` 只在默认分支上跑；公共仓库连续 60 天无任何活动后定时任务会被自动停用（有活动即恢复）；高峰期可能被推迟，所以「每天」实际是「通常每天」。要立刻跟上就在 Actions 里手动 run workflow。
+
 ## 部署
 
-使用 GitHub Pages 的**分支部署**方式（Deploy from a branch）：`main` 分支根目录，无需自定义 GitHub Actions workflow —— 部署由 GitHub Pages 内置的构建流程完成。
+使用 GitHub Pages 的**分支部署**方式（Deploy from a branch）：`main` 分支根目录 —— 部署由 GitHub Pages 内置的构建流程完成，不依赖任何 workflow。
 
 根目录的 `.nojekyll` 是一个空文件，用于显式关闭 Jekyll 处理，确保静态文件按原样提供服务。
+
+仓库里唯一的 workflow 是 `.github/workflows/sync-versions.yml`（见上一节），它只提交版本号变化，不参与部署。Pages 在 `main` 有新提交后自行重建，实测延迟约 2 分钟。
 
 ## Security
 

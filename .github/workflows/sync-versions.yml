@@ -1,0 +1,44 @@
+name: 同步子项目版本号
+
+# 只做一件事：把 index.html / README.md 里被 <!-- @v:key --> / <!-- @d:key -->
+# 包住的版本号与发布日期，按 PyPI 与 GitHub Releases 的现值刷新。
+# 区间外的文案（通路描述、默认值、安全说明）一概不动 —— 那些要人判断。
+#
+# 三条已知边界（都是 GitHub 官方文档口径）：
+# - schedule 只在默认分支上跑；
+# - 公共仓库 60 天无任何活动后，定时任务会被自动停用，有活动后自动恢复；
+# - 高峰期 schedule 可能被推迟，所以「每天一次」实际是「通常每天一次」。
+# 需要立刻跟随时用下面的 workflow_dispatch 手动跑一次即可。
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # UTC 03:17 = 北京 11:17，避开整点排队
+  workflow_dispatch:
+
+permissions:
+  contents: write # 供下面这一步把改动推回本仓库
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 按 PyPI / Releases 现值刷新标记区间
+        run: python scripts/sync_versions.py
+
+      - name: 只有真的变了才提交
+        run: |
+          if git diff --quiet -- index.html README.md; then
+            echo "无变化，不产生提交"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html README.md
+          git commit -m "chore(versions): 自动同步子项目版本号 [skip ci]"
+          git push
