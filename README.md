@@ -19,12 +19,12 @@
 
 | 工具 | 说明 | 状态 | 仓库 |
 | --- | --- | --- | --- |
-| 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（v0.9.0） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
+| 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（v0.9.1） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
 | 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（v1.6.0） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
 
 ### 课程表同步
 
-状态：**可用**（v0.9.0，2026-10-16）
+状态：**可用**（v0.9.1，2026-10-23）
 
 将 eHall「我的课表」解析为标准 iCalendar（`.ics`）：既能导出文件导入手机、电脑与其他日历应用，也能发布成一个订阅 URL，让日历客户端定期回源取最新。
 
@@ -35,6 +35,7 @@
 - 需要 Python 3.11+，并**自行配置官方校历与作息表**（工具刻意不内置猜测值）
 - 登录在你的浏览器中亲自完成，凭据不经手门户与本项目
 - 发布成订阅 URL 后，产物里有什么就是公开什么：带上考试时，考试名、时间、考场和座位号也在其中（考试项可单独关掉）
+- 订阅 URL 有两条托管路，代价不同：仓库保持公开 + GitHub Pages 最省事，但任何人都能列出那个分支里的文件名；私有仓库 + 第三方静态托管（例如 Cloudflare Pages）才把「知道地址才订得到」变成真的，代价是要多注册一个第三方账号，且国内可达性得自己在手机上先验一次
 
 ### 思源学堂工具
 
