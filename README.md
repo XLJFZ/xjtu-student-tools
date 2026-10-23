@@ -109,6 +109,12 @@ HTTPS_PROXY=http://127.0.0.1:7897 python scripts/sync_versions.py           # �
 
 定时任务的三条边界：`schedule` 只在默认分支上跑；公共仓库连续 60 天无任何活动后定时任务会被自动停用（有活动即恢复）；高峰期可能被推迟，所以「每天」实际是「通常每天」。要立刻跟上就在 Actions 里手动 run workflow。
 
+这套判据已经在 2026-10-23 用一次演练跑通：把课程表的标记临时写成 `v0.8.9`，手动触发一次
+workflow_dispatch，bot 自己提交把三处刷回 `v0.9.1`，并开出「文案复核：课程表同步 v0.8.9 → v0.9.1（minor）」。
+演练值这个价，因为它抓到一个平时看不见的问题：`actions/checkout` 默认把 HEAD 放在游离状态，
+裸跑 `git push` 只在**真的有版本号要提交**那一次才 fatal——日常每天都是绿的，第一次发版才会红。
+现在那一步显式推 `git push origin "HEAD:$GITHUB_REF_NAME"`。
+
 ## 部署
 
 使用 GitHub Pages 的**分支部署**方式（Deploy from a branch）：`main` 分支根目录 —— 部署由 GitHub Pages 内置的构建流程完成，不依赖任何 workflow。
