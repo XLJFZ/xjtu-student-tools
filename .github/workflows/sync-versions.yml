@@ -51,7 +51,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html README.md
           git commit -m "chore(versions): 自动同步子项目版本号 [skip ci]"
-          git push
+          # actions/checkout 默认是游离 HEAD，裸跑 git push 会在「真有变化」那次直接失败
+          # （fatal: You are not currently on a branch）。显式把 HEAD 推到触发时的分支。
+          git push origin "HEAD:$GITHUB_REF_NAME"
 
       - name: minor 及以上漂移开 issue 提醒复核文案
         env:
