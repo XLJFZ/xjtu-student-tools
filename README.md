@@ -20,7 +20,7 @@
 | 工具 | 说明 | 状态 | 仓库 |
 | --- | --- | --- | --- |
 | 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（<!-- @v:calendar -->v0.9.1<!-- @/v -->） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
-| 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（<!-- @v:siyuan -->v1.6.0<!-- @/v -->） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
+| 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（<!-- @v:siyuan -->v1.7.1<!-- @/v -->） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
 
 ### 课程表同步
 
@@ -39,15 +39,17 @@
 
 ### 思源学堂工具
 
-状态：**可用**（<!-- @v:siyuan -->v1.6.0<!-- @/v -->，<!-- @d:siyuan -->2026-10-08<!-- @/d -->）
+状态：**可用**（<!-- @v:siyuan -->v1.7.1<!-- @/v -->，<!-- @d:siyuan -->2026-10-24<!-- @/d -->）
 
 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，按类型与章节归类整理到本地。
 
 - 仓库：<https://github.com/XLJFZ/xjtu-siyuanxuetang-grab>
 - 使用说明：<https://xljfz.github.io/xjtu-siyuanxuetang-grab/>
 - 附件散在三类来源（活动附件数组、活动正文内嵌、直播回放地址），只读一类会漏；课件 PDF 几乎都在正文内嵌那一类
+- 作业附件只是题目，「交什么、怎么交、什么时候截止」写在活动详情里 —— 所以每个作业 / 实验活动除附件外另存一份 `说明.md`，把截止时间、提交方式与平台原文要求一并留下（富文本按段落转纯文本，内容没变就不重写文件）
 - 带断点续传、失败重试、大小与 SHA-256 校验、增量更新，以及先看清单不动文件的预览模式
 - 三种用法：装成 Skill 交给编码助手、配套 Prompt、或按命令行跑 `scripts/` 里的脚本；需要 Python 3.8+，只有登录环节依赖浏览器自动化
+- 登录态还有效时不再打开浏览器，只花一次接口探测的时间；`--check` 只探测、`--force` 强制重登
 - 只访问当前账号本就有权访问的资源，不绕过统一身份认证；主要用于个人备份与离线整理，请遵守学校规定与课程资源版权要求
 - 未发布到 PyPI，从仓库克隆或 Release 附件获取
 
