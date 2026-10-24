@@ -219,7 +219,12 @@ def sync(dry_run: bool) -> int:
     changed = []
     for path, text in pending:
         if not dry_run:
-            path.write_text(text, encoding="utf-8")
+            # ★ newline="\n" 必须显式写出来：不传的话 Python 在 Windows 上会把
+            #   '\n' 翻成 '\r\n'（read_text 已经做了反向归一），于是在 Windows
+            #   本地跑一次就把整份文件的行尾翻掉 —— guard 全部通过、脚本也报
+            #   「改写 4 处」，但 diff 里是整整 279 行。CI 跑在 Linux 上不会暴露
+            #   这个差异，只有本地手动跑才踩得到（2026-10-24 实测）。
+            path.write_text(text, encoding="utf-8", newline="\n")
         changed.append(f"{path.name}（{counts[path.name]} 处）")
 
     if changed:
