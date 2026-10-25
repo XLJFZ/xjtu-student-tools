@@ -19,12 +19,12 @@
 
 | 工具 | 说明 | 状态 | 仓库 |
 | --- | --- | --- | --- |
-| 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（<!-- @v:calendar -->v0.9.1<!-- @/v -->） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
+| 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（<!-- @v:calendar -->v0.10.2<!-- @/v -->） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
 | 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（<!-- @v:siyuan -->v1.7.1<!-- @/v -->） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
 
 ### 课程表同步
 
-状态：**可用**（<!-- @v:calendar -->v0.9.1<!-- @/v -->，<!-- @d:calendar -->2026-10-23<!-- @/d -->）
+状态：**可用**（<!-- @v:calendar -->v0.10.2<!-- @/v -->，<!-- @d:calendar -->2026-10-25<!-- @/d -->）
 
 将 eHall「我的课表」解析为标准 iCalendar（`.ics`）：既能导出文件导入手机、电脑与其他日历应用，也能发布成一个订阅 URL，让日历客户端定期回源取最新。
 
@@ -87,7 +87,7 @@ scripts/sync_versions.py      版本号同步脚本（标准库，无依赖）
 只改写被注释标记包住的区间，区间外的文案一个字都不动。
 
 ```html
-当前版本 <!-- @v:calendar -->v0.9.1<!-- @/v -->（<!-- @d:calendar -->2026-10-23<!-- @/d -->）。
+当前版本 <!-- @v:calendar -->v0.10.2<!-- @/v -->（<!-- @d:calendar -->2026-10-25<!-- @/d -->）。
 ```
 
 - 开始标记带关键字（`@v:` 收版本号、`@d:` 收发布日期），闭合标记是 `@/v`、`@/d`；版本号写成 `v0.9.1` 这种形状，日期写成 `2026-10-23`；同一文件里可以出现多次
