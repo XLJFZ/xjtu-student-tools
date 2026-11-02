@@ -20,7 +20,7 @@
 | 工具 | 说明 | 状态 | 仓库 |
 | --- | --- | --- | --- |
 | 课程表同步 | 将 eHall「我的课表」导出为标准 iCalendar（`.ics`）文件，也可发布成订阅 URL 由日历客户端回源 | 可用（<!-- @v:calendar -->v0.10.4<!-- @/v -->） | [xjtu-timetable-calendar](https://github.com/XLJFZ/xjtu-timetable-calendar) |
-| 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（<!-- @v:siyuan -->v1.7.1<!-- @/v -->） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
+| 思源学堂工具 | 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，并按章节归类整理 | 可用（<!-- @v:siyuan -->v1.8.0<!-- @/v -->） | [xjtu-siyuanxuetang-grab](https://github.com/XLJFZ/xjtu-siyuanxuetang-grab) |
 
 ### 课程表同步
 
@@ -39,7 +39,7 @@
 
 ### 思源学堂工具
 
-状态：**可用**（<!-- @v:siyuan -->v1.7.1<!-- @/v -->，<!-- @d:siyuan -->2026-10-24<!-- @/d -->）
+状态：**可用**（<!-- @v:siyuan -->v1.8.0<!-- @/v -->，<!-- @d:siyuan -->2026-11-02<!-- @/d -->）
 
 下载思源学堂 2.0 中当前账号有权访问的课件、作业与课程回放，按类型与章节归类整理到本地。
 
